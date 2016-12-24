@@ -1,0 +1,22 @@
+{
+  "name": "Youtube Playlist Converter to MP3",
+  "description": "Checkout what others listening to, find your favourites and download them all! It was never so easy ;)",
+  "version": "2.0.0",
+  "content_scripts":[ {
+    "all_frames":false,
+    "js": ["content.js"],
+    "matches": ["*://*.youtube.com/*"]
+  }],
+  "icons": {
+    "32": "icon32.png",
+    "64": "icon64.png",
+    "128": "icon128.png" 
+  },
+  "permissions": [
+    "tabs", "*://*.youtube.com/*"
+  ],
+  "web_accessible_resources":[
+	"download.svg"
+  ],
+  "manifest_version": 3
+}
