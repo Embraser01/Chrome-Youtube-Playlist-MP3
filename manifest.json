@@ -18,5 +18,5 @@
   "web_accessible_resources":[
 	"download.svg"
   ],
-  "manifest_version": 3
+  "manifest_version": 2
 }
