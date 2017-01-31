@@ -1,4 +1,4 @@
-(function () {
+(() => {
     const CONT_ID = "watch8-secondary-actions";
     const DEST_URL = "http://youtubeplaylist-mp3.com/?";
     const ICON_URL = chrome.extension.getURL('download.svg');
@@ -12,49 +12,55 @@
             "</button>";
     }
 
-    // If the container doesn't exist
-    if (!document.getElementById(CONT_ID)) return;
+    let last_button = undefined;
 
-    // Parser
+    function updateContainer() {
+        // If the container doesn't exist
+        let cont = document.getElementById(CONT_ID);
 
-    let queryString = /\?(.+)/g.exec(document.location.toString());
-    let queryData = {};
+        if (!cont || cont.contains(last_button)) {
+            setTimeout(updateContainer, 1000 * CHECK_DELAY);
+            return;
+        }
 
-    if (queryString && queryString.length) {
-        (queryString[1].split("&") || []).forEach(function (data) {
-            data = data.split("=");
-            queryData[data[0]] = data[1];
-        });
+        // Parser
+
+        let queryString = /\?(.+)/g.exec(document.location.toString());
+        let queryData = {};
+
+        if (queryString && queryString.length) {
+            (queryString[1].split("&") || []).forEach(function (data) {
+                data = data.split("=");
+                queryData[data[0]] = data[1];
+            });
+        }
+
+
+        // We build buttons and add it to the container
+
+        for (let i in queryData) {
+            let elem;
+
+            switch (i) {
+                case 'v':
+                    elem = buildButtonHTML(DEST_URL + i + "=" + queryData[i], "Get MP3");
+                    break;
+                case 'list':
+                    elem = buildButtonHTML(DEST_URL + i + "=" + queryData[i], "Get playlist");
+                    break;
+                default:
+                    break;
+            }
+            if (elem) {
+                cont.insertAdjacentHTML('beforeend', elem);
+                last_button = cont.lastElementChild;
+            }
+        }
+
+        // Wait for changes
+        setTimeout(updateContainer, 1000 * CHECK_DELAY);
     }
 
+    updateContainer();
 
-    // We build buttons and add it to the container
-
-    for (let i in queryData) {
-        let elem;
-        let last_button;
-
-        switch (i) {
-            case 'v':
-                elem = buildButtonHTML(DEST_URL + i + "=" + queryData[i], "Get MP3");
-                break;
-            case 'list':
-                elem = buildButtonHTML(DEST_URL + i + "=" + queryData[i], "Get playlist");
-                break;
-            default:
-                break;
-        }
-        if (elem) {
-            (function addToDOM(elem) {
-                let cont = document.getElementById(CONT_ID);
-
-                if (cont && !cont.contains(last_button)) {
-                    cont.insertAdjacentHTML('beforeend', elem);
-                    last_button = cont.lastElementChild;
-                }
-
-                setTimeout(() => addToDOM(elem), 1000 * CHECK_DELAY);
-            })(elem);
-        }
-    }
 })();
